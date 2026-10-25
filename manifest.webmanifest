@@ -1,0 +1,11 @@
+{
+  "name": "Food Intake Tracker",
+  "short_name": "Food Tracker",
+  "description": "Daily food log and nutrition target tracker",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#142d4e",
+  "orientation": "portrait",
+  "icons": []
+}

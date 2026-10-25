@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#142d4e">
+<meta name="description" content="Offline-friendly daily food and nutrition tracker">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Food Intake Tracker</title>
+<style>
+:root{--navy:#142d4e;--blue:#2864dc;--bg:#f4f7fb;--card:#fff;--text:#172235;--muted:#68778d;--line:#e1e8f0;--green:#16865c;--orange:#bd7210;--red:#c33b46}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding-bottom:84px}
+header{background:linear-gradient(135deg,#142d4e,#245d9b);color:#fff;padding:22px 18px 18px;border-radius:0 0 24px 24px}
+.top{max-width:900px;margin:auto;display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+h1{font-size:23px;margin:0 0 5px;letter-spacing:-.4px}.sub{font-size:13px;color:#d5e4f8}.datebox{margin-top:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+input,select,button{font:inherit}input,select{min-width:0;width:100%;border:1px solid var(--line);border-radius:11px;padding:11px 12px;background:#fff;color:var(--text)}input[type=date]{width:auto;padding:8px}
+main{max-width:900px;margin:0 auto;padding:14px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:0 0 14px}
+.tab{border:0;border-radius:12px;background:#e6edf7;color:#2e4565;padding:11px 5px;font-weight:700;font-size:13px}
+.tab.active{background:var(--navy);color:#fff}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:15px;margin-bottom:13px;box-shadow:0 3px 12px #18385b08}
+.cardhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+h2{font-size:17px;margin:0}h3{font-size:14px;margin:0 0 10px}
+.small{font-size:12px;color:var(--muted)}.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.metric{background:#f6f8fc;border-radius:13px;padding:12px}.metric .label{font-size:12px;color:var(--muted)}.metric .value{font-size:23px;font-weight:800;margin:3px 0}.metric .goal{font-size:11px;color:var(--muted)}
+.bar{height:7px;background:#e3eaf4;border-radius:9px;overflow:hidden;margin-top:8px}.bar>i{display:block;height:100%;width:0;background:var(--blue);border-radius:9px}
+.btn{border:0;border-radius:11px;padding:11px 14px;font-weight:750;background:var(--blue);color:#fff;cursor:pointer}.btn.secondary{background:#e8eef7;color:#233c60}.btn.danger{background:#fff0f0;color:#a32631}.btn.full{width:100%}.btn.sm{font-size:12px;padding:7px 10px}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field label{display:block;font-size:12px;color:var(--muted);font-weight:700;margin:0 0 5px}.field.wide{grid-column:1/-1}
+.mealgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.mealbtn{border:1px solid var(--line);border-radius:12px;padding:12px 10px;background:#fff;text-align:left;cursor:pointer}.mealbtn strong{display:block;font-size:14px}.mealbtn span{font-size:11px;color:var(--muted)}
+.foodrow{border:1px solid var(--line);border-radius:13px;padding:12px;margin-bottom:9px}.foodrowtop{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.foodrow strong{font-size:14px}.nutrientline{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.6}.pill{display:inline-block;background:#eaf1ff;color:#2853a0;padding:4px 7px;border-radius:8px;font-size:11px;font-weight:700}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.empty{padding:24px;text-align:center;color:var(--muted);font-size:13px}
+hr{border:0;border-top:1px solid var(--line);margin:14px 0}
+.bottomnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:9px 12px calc(9px + env(safe-area-inset-bottom));display:flex;justify-content:center;z-index:10}
+.bottomnav .inner{width:min(900px,100%);display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.notice{font-size:12px;color:var(--muted);line-height:1.5}
+#toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%);background:#142d4e;color:#fff;padding:10px 15px;border-radius:12px;font-size:13px;display:none;z-index:20;max-width:90%;text-align:center}
+@media(min-width:650px){.metrics{grid-template-columns:repeat(4,minmax(0,1fr))}.mealgrid{grid-template-columns:repeat(5,minmax(0,1fr))}.tabs{max-width:480px}.formgrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header><div class="top"><div><h1>Food Intake Tracker</h1><div class="sub">Daily nutrition • Muscle-gain goals • Saved on this device</div></div><span class="pill" style="background:#ffffff22;color:#fff">OFFLINE READY</span></div>
+<div class="datebox"><label for="logDate" style="font-size:13px;font-weight:700">Tracking date</label><input id="logDate" type="date"><button class="btn secondary sm" id="todayBtn">Today</button></div></header>
+<main>
+<div class="tabs">
+<button class="tab active" data-tab="dashboard">Summary</button><button class="tab" data-tab="log">Food Log</button><button class="tab" data-tab="foods">Food Database</button>
+</div>
+<section class="panel active" id="dashboard">
+<div class="card"><div class="cardhead"><h2>Today's intake</h2><span class="small" id="summaryDate"></span></div><div class="metrics" id="metrics"></div></div>
+<div class="card"><div class="cardhead"><h2>Meals 1–10</h2><span class="small">Tap a meal to add food</span></div><div class="mealgrid" id="mealButtons"></div></div>
+<div class="card"><div class="cardhead"><h2>Food consumed</h2><span class="pill" id="entryCount">0 entries</span></div><div id="todayFoods"></div></div>
+<div class="card"><h2>Targets</h2><p class="notice">Starting muscle-gain targets from your spreadsheet. You can adjust them in this section.</p><div id="targetFields" class="formgrid"></div><button class="btn full" style="margin-top:12px" id="saveTargets">Save nutrition targets</button></div>
+</section>
+<section class="panel" id="log">
+<div class="card"><div class="cardhead"><h2 id="formTitle">Add food consumed</h2><span class="small">Nutrition is calculated per 100 g</span></div>
+<form id="foodForm"><div class="formgrid">
+<div class="field"><label for="mealSelect">Meal</label><select id="mealSelect"></select></div>
+<div class="field"><label for="foodSelect">Food</label><select id="foodSelect" required></select></div>
+<div class="field"><label for="grams">Weight eaten (g)</label><input id="grams" type="number" min="0.1" step="0.1" placeholder="e.g. 150" required></div>
+<div class="field"><label for="timeNote">Note (optional)</label><input id="timeNote" type="text" placeholder="e.g. cooked, brand"></div>
+</div><div id="foodPreview" class="notice" style="margin:12px 0"></div><button class="btn full" type="submit" id="saveFood">Add to daily log</button><button class="btn secondary full" type="button" id="cancelEdit" style="display:none;margin-top:8px">Cancel edit</button></form></div>
+<div class="card"><div class="cardhead"><h2>Entries for selected date</h2><button class="btn secondary sm" id="exportCsv">Export CSV</button></div><div id="logEntries"></div></div>
+</section>
+<section class="panel" id="foods">
+<div class="card"><div class="cardhead"><h2>Food database</h2><span class="pill" id="foodCount"></span></div><p class="notice">Nutrition values are estimates per 100 g. For packaged food, use the nutrition label when available.</p><input id="foodSearch" type="search" placeholder="Search foods..." style="margin-bottom:10px"><div id="foodList"></div></div>
+<div class="card"><div class="cardhead"><h2>Add a custom food</h2></div><form id="customFoodForm"><div class="formgrid">
+<div class="field wide"><label>Food name</label><input id="newName" required placeholder="e.g. Brand name tuna"></div>
+<div class="field"><label>Calories / 100 g</label><input id="newCalories" type="number" min="0" step="0.1" required></div>
+<div class="field"><label>Protein (g)</label><input id="newProtein" type="number" min="0" step="0.1" required></div>
+<div class="field"><label>Carbs (g)</label><input id="newCarbs" type="number" min="0" step="0.1" required></div>
+<div class="field"><label>Fat (g)</label><input id="newFat" type="number" min="0" step="0.1" required></div>
+<div class="field"><label>Fiber (g)</label><input id="newFiber" type="number" min="0" step="0.1" value="0" required></div>
+<div class="field"><label>Sugar (g)</label><input id="newSugar" type="number" min="0" step="0.1" value="0" required></div>
+<div class="field"><label>Sodium (mg)</label><input id="newSodium" type="number" min="0" step="0.1" value="0" required></div>
+<div class="field"><label>Cholesterol (mg)</label><input id="newCholesterol" type="number" min="0" step="0.1" value="0" required></div>
+</div><button class="btn full" style="margin-top:12px" type="submit">Save custom food</button></form></div>
+<div class="card"><h2>Backup & restore</h2><p class="notice">Export a backup to keep your records safe or move them to another device.</p><div class="actions"><button class="btn secondary" id="backupBtn">Download backup</button><label class="btn secondary" for="restoreFile" style="cursor:pointer">Restore backup</label><input id="restoreFile" type="file" accept="application/json,.json" style="display:none"></div></div>
+</section>
+</main>
+<div class="bottomnav"><div class="inner"><button class="tab active" data-tab="dashboard">Summary</button><button class="tab" data-tab="log">+ Food</button><button class="tab" data-tab="foods">Foods & Backup</button></div></div>
+<div id="toast"></div>
+<script src="app.js"></script><script>if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("./service-worker.js").catch(()=>{});</script>
+</body></html>
